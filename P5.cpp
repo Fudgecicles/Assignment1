@@ -11,13 +11,13 @@ using namespace std;
 struct bucket{
 	bool full = false;
 	int* contents = NULL;
-	int size= 0;
+	int size = 0;
 };
 
 //Places the array of ints entry into the bucket buck, sets the bucket's size to count and sets full to treu afterwards. Spot is passed for outputting errors.
-void put(bucket &buck, int* entry, int count,int spot){
+void put(bucket &buck, int* entry, int count, int spot){
 	//If the bucket is already full output an error
-	if (buck.full == true){ 
+	if (buck.full == true){
 		cout << "bucket " << spot << " is not empty" << endl;
 		//The array of ints must be deleted because the bucket's contents will not reference them now.
 		delete[] entry;
@@ -49,12 +49,12 @@ void output(bucket buck){
 			cout << buck.contents[k] << " ";
 		}
 	}
-	
+
 	cout << endl;
 }
 // Function that converts a line of text stored in a c-string to an array of integers, size is passed in to tell it how many entries there are. 
 // This is used for the PUT command after the bucket its being stored in and the number of entries is parsed
-int* linetoarray(char* arr,int size){
+int* linetoarray(char* arr, int size){
 	stringstream converter;
 	converter << arr;
 	int* contents = new int[size];
@@ -65,7 +65,7 @@ int* linetoarray(char* arr,int size){
 		if (converter.fail()){
 			cout << "Not all values on Put command are integers" << endl;
 			// returns a null pointer which will be checked for and ignored if detected in the main function and delete any of the contents that were already created
-			delete[] contents
+			delete[] contents;
 			int* temp = NULL;
 			return temp;
 		}
@@ -137,7 +137,9 @@ int main(int argc, char** argv){
 		// Get the first word from the line and put it into a c-string then if statements to check which command it is
 		converter.get(command, 80, ' ');
 		// Check if the line is a PUT command
-		if (strcmp(command, "PUT")==0){
+		// I'm doing weird stuff here because for some reason when I brought into GCC, it would add a white space in front of every char array
+		// Checking the characters individually would somehow remove this space and then strcmp works correctly
+		if (command[1] == 'P'&&command[2]=='U'&&command[3]=='T'||strcmp(command,"PUT")==0){
 			// get the bucket index that the PUT command will be performed on
 			int index;
 			converter >> index;
@@ -171,7 +173,7 @@ int main(int argc, char** argv){
 				delete[] contents;
 		}
 		//check if the line is an EMPTY statement
-		else if (strcmp(command, "EMPTY")==0){
+		else if (command[1]=='E'||strcmp(command, "EMPTY") == 0){
 			//get the index of what bucket we will be operating on
 			int index;
 			converter >> index;
@@ -187,10 +189,10 @@ int main(int argc, char** argv){
 				continue;
 			}
 			//Empty the bucket of the index, we use index -1 because indexes start at 1 not 0
-			empty(buckets[index-1]);
+			empty(buckets[index - 1]);
 		}
 		//check if the line is an OUTPUT statement
-		else if (strcmp(command, "OUTPUT")==0){
+		else if (command[1]=='O'||strcmp(command, "OUTPUT") == 0){
 			//get the index of what bucket we will be operating on
 			int index;
 			converter >> index;
@@ -205,15 +207,17 @@ int main(int argc, char** argv){
 				continue;
 			}
 			//print out the contents of the chosen bucket with the output function, we use index -1 because the indexes start at 1 not 0
-			output(buckets[index-1]);
+			output(buckets[index - 1]);
 		}
 		// Error checking for a command that does not exist and exit afterwards
 		else{
+			cout << command[1];
+			cout << strcmp(command, "PUT");
 			cout << "Command does not exist, press enter to exit";
 			char temp[80];
 			cin.getline(temp, 80);
 			return 1;
-			
+
 		}
 	}
 	//create a dummy char array to let the user press enter to continue

@@ -55,8 +55,8 @@ int main(int argc, char *argv[]){
 		converter << lines[k];
 		char test[80];
 		converter >> test;
-		//checking if the line is empty and if it is not incrementing the number of words in the line
-		while (strlen(test) != 0){
+		//checking if we are at the end of the file and if not taking in another word and incrementing counter
+		while (!converter.eof()){
 			words++;
 			converter >> test;
 		}
